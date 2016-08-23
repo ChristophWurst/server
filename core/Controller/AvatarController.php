@@ -111,7 +111,7 @@ class AvatarController extends Controller {
 	 *
 	 * @param string $userId
 	 * @param int $size
-	 * @return DataResponse|DataDisplayResponse
+	 * @return DataResponse|DataDisplayResponse|Http\FileDisplayResponse
 	 */
 	public function getAvatar($userId, $size) {
 		if ($size > 2048) {
@@ -122,10 +122,9 @@ class AvatarController extends Controller {
 
 		try {
 			$avatar = $this->avatarManager->getAvatar($userId)->getFile($size);
-			$resp = new DataDisplayResponse($avatar->getContent(),
+			$resp = new Http\FileDisplayResponse($avatar,
 				Http::STATUS_OK,
 				['Content-Type' => $avatar->getMimeType()]);
-			$resp->setETag($avatar->getEtag());
 		} catch (NotFoundException $e) {
 			$user = $this->userManager->get($userId);
 			$resp = new DataResponse([
